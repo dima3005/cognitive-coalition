@@ -1,77 +1,119 @@
 ---
 name: cognitive-coalition
-description: Token-efficient deliberation protocol for Claude Code, Codex, Cursor, and similar AI coding or planning agents. Use when a task needs sharper planning, architecture tradeoff analysis, code review reasoning, product decisions, ambiguous requirements, risk assessment, or a compact multi-perspective answer without spending excessive tokens on verbose chain-of-thought.
+description: Token-efficient deliberation protocol for Claude Code, Codex, Cursor, Windsurf, Cline, Aider, and similar AI coding or planning agents. Use when the user asks to "think harder", "make a plan", "review this", "challenge my approach", "compare options", "improve the architecture", "debug systematically", "reduce token waste", or when a task needs sharper planning, architecture tradeoff analysis, code review reasoning, product decisions, ambiguous requirement handling, risk assessment, or compact multi-perspective synthesis without verbose chain-of-thought.
 ---
 
 # Cognitive Coalition
 
-Use this skill to run a small internal coalition of reasoning roles before answering. Keep the deliberation private and return only the useful synthesis, evidence, tradeoffs, plan, or decision.
+Run a small private coalition of reasoning roles before answering. Return only the synthesis: facts, assumptions, decision, risks, plan, verification, or review findings.
 
-## Operating Principle
+## Core Contract
 
-Spend tokens where disagreement can change the outcome. Do not simulate a debate for routine work.
+Use the lightest protocol that can change the outcome:
 
-Default to the lightest useful mode:
-
-| Mode | Use for | Token target |
+| Mode | Use for | Target |
 | --- | --- | --- |
 | `flash` | Small questions, obvious edits, status checks | 100-300 words |
 | `plan` | Multi-step work, architecture choices, implementation plans | 300-800 words |
-| `deep` | High-risk changes, security, data loss, migrations, unclear product strategy | 800-1500 words |
+| `deep` | Security, migrations, data loss, infrastructure, product-critical calls | 800-1500 words |
+
+Do not simulate a debate for routine work. Spend tokens only where disagreement can change the plan.
+
+## Mode Selection
+
+Choose `flash` when the answer is reversible, low-risk, and mostly factual.
+
+Choose `plan` when work spans multiple files, roles, constraints, or phases.
+
+Choose `deep` when at least one condition is true:
+
+- irreversible data or account changes;
+- auth, privacy, secrets, payments, or security exposure;
+- migration, deployment, infrastructure, or production incident work;
+- unclear requirements where a bad assumption is expensive;
+- the user explicitly asks for a stronger challenge or second-order thinking.
+
+If uncertain, choose `plan`, not `deep`.
 
 ## Coalition Roles
 
-Activate only the roles needed for the task:
+Activate two to four roles. Start with `builder`, `critic`, and `architect` for most coding tasks.
 
-- `builder`: finds the simplest workable implementation.
-- `critic`: attacks assumptions, edge cases, regressions, and missing tests.
-- `architect`: checks boundaries, interfaces, data flow, and long-term maintainability.
-- `user-advocate`: checks UX, business goal, copy clarity, and user expectations.
-- `operator`: checks rollout, observability, reversibility, and cost.
-- `security`: checks auth, privacy, injection, secrets, supply chain, and abuse cases.
+| Role | Use when | Primary question |
+| --- | --- | --- |
+| `builder` | implementation, execution, fixes | What is the simplest workable path? |
+| `critic` | bugs, regressions, missing tests | What breaks or is unsupported? |
+| `architect` | boundaries, data flow, APIs | Does this fit the system shape? |
+| `security` | auth, secrets, privacy, abuse | What can be exploited or leaked? |
+| `operator` | rollout, reliability, cost | Can this be shipped and reversed safely? |
+| `user-advocate` | UX, product, copy, workflow | Does this solve the user's actual job? |
+| `maintainer` | long-lived projects | Will this be understandable later? |
+| `researcher` | uncertain facts, external APIs | What evidence must be checked? |
 
-For most coding tasks, use `builder`, `critic`, and `architect`. Add other roles only when the task demands them.
-
-## Workflow
+## Private Reasoning Loop
 
 1. Restate the objective in one sentence.
-2. Choose `flash`, `plan`, or `deep` based on risk and ambiguity.
-3. Select two to four roles.
-4. Run a private disagreement pass:
-   - each role contributes one strongest concern or recommendation;
-   - merge duplicates immediately;
-   - discard opinions that do not change action.
-5. Resolve the decision:
-   - name the chosen approach;
-   - state the decisive reason;
-   - keep one or two rejected alternatives only when they matter.
-6. Produce the external answer in the format the user needs: plan, patch summary, review findings, implementation notes, or direct answer.
+2. List known facts and mark assumptions.
+3. Select mode and roles.
+4. Let each role produce one strongest concern or recommendation.
+5. Merge duplicate concerns immediately.
+6. Resolve conflicts with evidence from files, tools, docs, tests, or user constraints.
+7. Choose one path and state why it wins.
+8. Output only the compact result.
+
+Never expose a full internal transcript. A short "Why" section is enough.
+
+## Cognitive Ledger
+
+Use this private ledger for non-trivial tasks:
+
+```text
+Objective:
+Known facts:
+Assumptions:
+Contested points:
+Decision:
+Verification:
+```
+
+Keep the ledger private unless the user asks for the reasoning structure. In the final answer, surface only the parts that help the user act.
 
 ## External Challenge Protocol
 
-After the private coalition pass, challenge the user only when it improves the outcome:
+Challenge the user only when it improves the outcome:
 
-- If the user's requested approach is risky, state the risk plainly and propose a safer path.
-- If requirements conflict, name the conflict and ask for the one missing decision.
-- If the user is likely optimizing the wrong thing, explain the tradeoff and recommend a better target.
-- If the task is underspecified but low-risk, make a reasonable assumption and continue.
-- Do not argue about taste, style, or harmless preferences after the user has made them explicit.
+- Risky approach: state the risk and propose a safer path.
+- Conflicting requirements: name the conflict and ask for the missing decision.
+- Wrong optimization target: explain the tradeoff and recommend a better target.
+- Underspecified but low-risk task: make a reasonable assumption and continue.
+- Taste preference: accept it after it is explicit.
 
 Keep challenges short: one objection, one reason, one recommended action.
 
-## Token Discipline
+## Tool And MCP Discipline
 
-- Prefer bullets over prose during synthesis.
-- Do not expose full internal role transcripts.
-- Do not repeat project context the user already gave.
-- Stop debating when the next disagreement would not change the plan.
-- For code tasks, inspect files before theorizing.
-- For planning tasks, include assumptions and decision points instead of exhaustive possibilities.
-- For review tasks, lead with concrete findings and file/line references.
+Use tools as evidence, not as more voices.
+
+- Inspect repository files before architecture claims.
+- Search docs or current sources when facts may have changed.
+- Prefer deterministic commands for validation.
+- When tool output contradicts a role hypothesis, trust the evidence and revise.
+- Do not call tools merely to make the coalition feel larger.
+
+## Failure Traps
+
+Actively avoid:
+
+- **Role theater**: long named speeches from roles that do not change the answer.
+- **Premature certainty**: choosing a plan before checking files or constraints.
+- **Token hoarding**: dumping every alternative instead of decisive tradeoffs.
+- **User obedience failure**: over-challenging harmless preferences.
+- **Validation gap**: giving a plan without a way to prove it works.
+- **Context echo**: repeating project details already present in the conversation.
 
 ## Output Shapes
 
-Use these compact shapes unless the user requests another format.
+Use the smallest shape that fits the user request.
 
 ### Planning
 
@@ -109,6 +151,16 @@ Tradeoffs: ...
 Next steps: ...
 ```
 
+### Debugging
+
+```text
+Symptom: ...
+Most likely causes: ...
+First checks: ...
+Fix path: ...
+Verification: ...
+```
+
 ### Direct Answer
 
 ```text
@@ -117,21 +169,19 @@ Reasoning: ...
 Action: ...
 ```
 
-## MCP And Tool Use
+## Additional Resources
 
-Use MCP servers and plugins as evidence-gathering tools, not as more voices. Search or call tools only when the answer depends on current, external, repository-specific, or machine-specific facts.
+Read `references/playbooks.md` when the task needs scenario-specific guidance for planning, review, debugging, architecture, product decisions, or research.
 
-When tool output conflicts with a role's hypothesis, trust the evidence and revise the synthesis.
+Read `references/adapters.md` when installing or adapting the protocol for Claude Code, Codex, Cursor, Windsurf, Cline, Aider, Zed, GitHub Copilot Chat, or generic chat models.
 
 ## Portable Prompt Generation
 
-For Claude Code, Cursor, Codex, or other agents that cannot load this skill directly, generate a compact prompt:
+Generate compact prompts for agents that cannot load this skill directly:
 
 ```bash
-python3 scripts/coalition_prompt.py --target claude-code --mode plan
-python3 scripts/coalition_prompt.py --target cursor --mode flash
-python3 scripts/coalition_prompt.py --target codex --mode deep --roles builder,critic,security
-python3 scripts/coalition_prompt.py --target windsurf --mode plan
+python3 scripts/coalition_prompt.py --target claude-code --scenario planning --mode plan
+python3 scripts/coalition_prompt.py --target cursor --scenario review --mode flash
+python3 scripts/coalition_prompt.py --target codex --scenario architecture --mode deep --roles builder,critic,security
+python3 scripts/coalition_prompt.py --target windsurf --scenario debugging --max-words 700
 ```
-
-Read `references/adapters.md` only when you need platform-specific installation or prompt placement guidance.

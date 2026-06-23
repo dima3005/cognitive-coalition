@@ -1,37 +1,71 @@
 # Adapter Notes
 
-Use this reference only when the user needs to install or adapt Cognitive Coalition outside a native Codex skill loader.
+Use this reference only when installing or adapting Cognitive Coalition outside a native Codex skill loader.
 
 ## Claude Code
 
-Place the compact prompt in `CLAUDE.md` or a project-level instruction file. Keep it below project-specific rules. If the project already has long instructions, add only this line:
+Place a generated prompt in `CLAUDE.md` below project-specific rules.
+
+Recommended:
+
+```bash
+python3 cognitive-coalition/scripts/coalition_prompt.py --target claude-code --scenario planning --mode plan
+```
+
+If `CLAUDE.md` is already long, add only:
 
 ```text
-Use Cognitive Coalition: choose flash/plan/deep, privately compare builder/critic/architect roles, then return only the compact synthesis.
+Use Cognitive Coalition: choose flash/plan/deep, privately compare builder/critic/architect roles, challenge only material risks, then return compact synthesis.
 ```
 
 ## Codex
 
-Install this folder as a Codex skill when possible. If direct installation is unavailable, place the compact prompt in `AGENTS.md` under a short "Reasoning Protocol" section.
+Install this folder as a Codex skill when possible:
+
+```bash
+cp -R cognitive-coalition ~/.codex/skills/
+```
+
+If direct installation is unavailable, place a generated prompt in `AGENTS.md` under a short "Reasoning Protocol" section.
 
 ## Cursor
 
-Place the compact prompt in Cursor project rules. Use `flash` by default for inline edits and `plan` for multi-file changes.
+Place the generated prompt in Cursor project rules. Use:
 
-## Windsurf, Cline, Aider, And Similar Agents
+- `flash` for inline edits and small fixes;
+- `plan` for multi-file edits;
+- `deep` for migrations, auth, security, or production risk.
 
-Place the compact prompt in the project's agent rules, memory, or system prompt equivalent. Prefer `flash` for single-file edits, `plan` for multi-file work, and `deep` only for migrations, security, infrastructure, or product-critical decisions.
+## Windsurf
+
+Place the generated prompt in workspace rules or memory. Prefer `plan` for coding tasks because Windsurf often works across several files.
+
+## Cline
+
+Place the generated prompt in custom instructions. Include `--max-words` if responses become too verbose.
+
+## Aider
+
+Place the generated prompt in repo instructions or the session prompt. Prefer `review` or `debugging` scenarios when asking Aider to modify existing code.
+
+## Zed And GitHub Copilot Chat
+
+Use `--target zed` or `--target copilot-chat` and paste the result into the assistant context or repo instructions.
 
 ## Generic Chat Models
 
-Paste the generated prompt before the task. Add a hard output limit such as "answer in under 700 words" when cost matters.
+Paste a generated prompt before the task. Add a hard budget when cost matters:
 
-## When Not To Use
+```bash
+python3 cognitive-coalition/scripts/coalition_prompt.py --target generic --scenario planning --mode plan --max-words 600
+```
 
-Do not enable deep coalition mode for:
+## When Not To Use Deep Mode
+
+Avoid `deep` for:
 
 - simple command output;
 - direct translations;
 - formatting-only edits;
 - tiny bug fixes with obvious test coverage;
-- any task where latency matters more than decision quality.
+- tasks where latency matters more than decision quality.

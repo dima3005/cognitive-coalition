@@ -1,4 +1,4 @@
 interface:
   display_name: "Cognitive Coalition"
-  short_description: "Token-frugal multi-role reasoning for agents"
-  default_prompt: "Use $cognitive-coalition to produce a compact plan after internal role debate."
+  short_description: "Budgeted role debate for sharper agent plans"
+  default_prompt: "Use $cognitive-coalition to challenge the approach, choose a reasoning mode, and return a compact verified plan."
