@@ -1,4 +1,4 @@
 interface:
   display_name: "Cognitive Coalition"
-  short_description: "Budgeted role debate for sharper agent plans"
-  default_prompt: "Use $cognitive-coalition to challenge the approach, choose a reasoning mode, and return a compact verified plan."
+  short_description: "Claude Code-first budgeted role debate"
+  default_prompt: "Use $cognitive-coalition to make Claude Code challenge the approach, choose a reasoning mode, and return a compact verified plan."
