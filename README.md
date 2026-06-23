@@ -73,6 +73,8 @@ For deeper architecture work:
 python3 cognitive-coalition/scripts/coalition_prompt.py --target claude-code --scenario architecture --mode deep --max-words 900
 ```
 
+See [examples/claude-code.md](examples/claude-code.md) for a copy-paste ready project instruction.
+
 ## When To Use It
 
 Use Cognitive Coalition in Claude Code when you ask for:
@@ -173,6 +175,8 @@ Use $cognitive-coalition to challenge this architecture and return a verified pl
 
 ```text
 cognitive-coalition/
+|-- examples/
+|   `-- claude-code.md           # Copy-paste CLAUDE.md example
 |-- SKILL.md                     # Native skill instructions
 |-- agents/
 |   `-- openai.yaml              # UI metadata for skill loaders
@@ -206,3 +210,11 @@ If you have Codex's skill validator available:
 ```bash
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py cognitive-coalition
 ```
+
+## Project Health
+
+- MIT licensed.
+- Contribution guide included.
+- Security policy included.
+- Roadmap included.
+- Public GitHub repository with Claude Code-first positioning.
