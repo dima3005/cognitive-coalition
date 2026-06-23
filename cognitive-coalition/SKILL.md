@@ -1,11 +1,11 @@
 ---
 name: cognitive-coalition
-description: Token-efficient deliberation protocol for Claude Code, Codex, Cursor, Windsurf, Cline, Aider, and similar AI coding or planning agents. Use when the user asks to "think harder", "make a plan", "review this", "challenge my approach", "compare options", "improve the architecture", "debug systematically", "reduce token waste", or when a task needs sharper planning, architecture tradeoff analysis, code review reasoning, product decisions, ambiguous requirement handling, risk assessment, or compact multi-perspective synthesis without verbose chain-of-thought.
+description: Claude Code-first token-efficient deliberation protocol, also portable to Codex, Cursor, Windsurf, Cline, Aider, and similar AI coding agents. Use when the user asks to "think harder", "make a plan", "review this", "challenge my approach", "compare options", "improve the architecture", "debug systematically", "reduce token waste", or when Claude Code needs sharper planning, architecture tradeoff analysis, code review reasoning, product decisions, ambiguous requirement handling, risk assessment, or compact multi-perspective synthesis without verbose chain-of-thought.
 ---
 
 # Cognitive Coalition
 
-Run a small private coalition of reasoning roles before answering. Return only the synthesis: facts, assumptions, decision, risks, plan, verification, or review findings.
+Run a small private coalition of reasoning roles before answering. Optimize primarily for Claude Code coding sessions. Return only the synthesis: facts, assumptions, decision, risks, plan, verification, or review findings.
 
 ## Core Contract
 
